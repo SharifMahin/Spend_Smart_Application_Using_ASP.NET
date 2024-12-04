@@ -15,27 +15,55 @@ namespace spendSmart.Controllers
             _context = context;
         }
 
+        //dispaly the retrive data
         public IActionResult Index()
         {
-            return View();
-        }
-
-        public IActionResult Expense()
-        {
-            var allExpenses = _context.Expenses.ToList(); //store the Data here
+            var allExpenses = _context.Expenses.ToList(); //store the Data into variable
+            var totalExpense = allExpenses.Sum(x => x.Value);
+            ViewBag.Expenses = totalExpense;
             return View(allExpenses);
         }
 
-        public IActionResult CreateEditExpense()
+        //Edit the data
+        public IActionResult CreateEditExpense(int ? Id)
         {
+            if (Id != null)
+            {
+                var CheckId = _context.Expenses.SingleOrDefault(x => x.Id == Id);
+                return View(CheckId);
+            }
             return View();
         }
 
+        // delete the data
+        public IActionResult DeleteExpense(int Id)
+        {
+            var CheckId = _context.Expenses.SingleOrDefault(x => x.Id == Id);
+            if (CheckId == null) {
+                TempData["Message"] = "The Id was not found.";   // Set a message in TempData to display on the next request.
+            }
+            else
+            {
+                _context.Expenses.Remove(CheckId);
+                _context.SaveChanges();
+                TempData["Message"] = "Do you delete the Expense data?";
+            }
+            return RedirectToAction ("Index");
+        }
+
+        //create or store the data
         public IActionResult CreateEditExpenseForm(Expense model)
         {
-            _context.Expenses.Add(model);
+            if(model.Id == 0)
+            {
+             _context.Expenses.Add(model);   // add the data into Expenses table of InMemory Db
+            }
+            else
+            {
+            _context.Expenses.Update(model);
+            }
             _context.SaveChanges();
-            return RedirectToAction("CreateEditExpense");
+            return RedirectToAction("Index");
         }
 
         public IActionResult Privacy()

@@ -2,8 +2,52 @@
     ViewData["Title"] = "Home Page";
 }
 
+@*Display the alert if TempData["Message"] exists.*@
+@if (TempData["Message"] != null)
+{
+    <script>
+        alert('@TempData["Message"]');
+    </script>
+}
+
 <div class="text-center">
     <h1 class="display-4">Hi, This is Mahin</h1>
-    <a class ="btn btn-primary" asp-controller="Home" asp-action="Expense"> Click</a>
-    <a class="btn btn-secondary" asp-controller="Home" asp-action="CreateEditExpense"> Edit</a>
+    <hr />    
+    <hr />
+    <hr />
+    <h3>Total Expenses : $@ViewBag.Expenses</h3>
+    <br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Value $</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (var exp in Model)
+                {
+                    <tr>
+                        <td>
+                            @exp.Id
+                        </td>
+                        <td>
+                            @exp.Value
+                        </td>
+                        <td>
+                            @exp.Description
+                        </td>
+                        <td>
+                            <a class="btn btn-info" asp-action="CreateEditExpense" asp-route-id="@exp.Id">Edit</a>
+                            <a class="btn btn-danger" asp-action="DeleteExpense" asp-route-id="@exp.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
 </div>
+
